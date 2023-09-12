@@ -19,17 +19,19 @@ include::
 And that's all !
 """
 from django.urls import include, path
-from rest_framework import viewsets, relations
-from rest_framework.serializers import HyperlinkedModelSerializer
-from rest_framework import routers
-
+from rest_framework import relations, routers, viewsets
+from rest_framework.serializers import CharField, HyperlinkedModelSerializer
 
 from ..loading import get_cities_models
 
 Country, Region, SubRegion, City = get_cities_models()
 
 
-class CitySerializer(HyperlinkedModelSerializer):
+class Q:
+    q = CharField(max_length=200, write_only=True, required=False)
+
+
+class CitySerializer(Q, HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for City.
     """
@@ -47,7 +49,7 @@ class CitySerializer(HyperlinkedModelSerializer):
         exclude = ('slug',)
 
 
-class SubRegionSerializer(HyperlinkedModelSerializer):
+class SubRegionSerializer(Q, HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for SubRegion.
     """
@@ -63,7 +65,7 @@ class SubRegionSerializer(HyperlinkedModelSerializer):
         exclude = ('slug',)
 
 
-class RegionSerializer(HyperlinkedModelSerializer):
+class RegionSerializer(Q, HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for Region.
     """
@@ -77,7 +79,7 @@ class RegionSerializer(HyperlinkedModelSerializer):
         exclude = ('slug',)
 
 
-class CountrySerializer(HyperlinkedModelSerializer):
+class CountrySerializer(Q, HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for Country.
     """
