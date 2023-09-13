@@ -171,10 +171,8 @@ class AbstractCity(Base):
     display_name = models.CharField(max_length=200)
 
     search_names = ToSearchTextField(
-        max_length=4000,
-        db_index=INDEX_SEARCH_NAMES,
-        blank=True,
-        default='')
+        max_length=4000, db_index=False, blank=True, default=""
+    )
 
     latitude = models.DecimalField(
         max_digits=8,
