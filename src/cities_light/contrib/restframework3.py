@@ -18,20 +18,36 @@ include::
 
 And that's all !
 """
+import django_filters
 from django.urls import include, path
+from django_filters import rest_framework as filters
 from rest_framework import relations, routers, viewsets
-from rest_framework.serializers import CharField, HyperlinkedModelSerializer
+from rest_framework.serializers import HyperlinkedModelSerializer
 
 from ..loading import get_cities_models
 
 Country, Region, SubRegion, City = get_cities_models()
 
 
-class Q:
-    q = CharField(max_length=200, write_only=True, required=False)
+class CityFilter(filters.FilterSet):
+    class Meta:
+        model = City
+        fields = ["country", "region", "subregion"]
 
 
-class CitySerializer(Q, HyperlinkedModelSerializer):
+class RegionFilter(filters.FilterSet):
+    class Meta:
+        model = Region
+        fields = ["country"]
+
+
+class SubRegionFilter(filters.FilterSet):
+    class Meta:
+        model = SubRegion
+        fields = ["country", "region"]
+
+
+class CitySerializer(HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for City.
     """
@@ -49,7 +65,7 @@ class CitySerializer(Q, HyperlinkedModelSerializer):
         exclude = ('slug',)
 
 
-class SubRegionSerializer(Q, HyperlinkedModelSerializer):
+class SubRegionSerializer(HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for SubRegion.
     """
@@ -65,7 +81,7 @@ class SubRegionSerializer(Q, HyperlinkedModelSerializer):
         exclude = ('slug',)
 
 
-class RegionSerializer(Q, HyperlinkedModelSerializer):
+class RegionSerializer(HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for Region.
     """
@@ -79,7 +95,7 @@ class RegionSerializer(Q, HyperlinkedModelSerializer):
         exclude = ('slug',)
 
 
-class CountrySerializer(Q, HyperlinkedModelSerializer):
+class CountrySerializer(HyperlinkedModelSerializer):
     """
     HyperlinkedModelSerializer for Country.
     """
@@ -112,12 +128,14 @@ class CountryModelViewSet(CitiesLightListModelViewSet):
 class RegionModelViewSet(CitiesLightListModelViewSet):
     serializer_class = RegionSerializer
     queryset = Region.objects.all()
-
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_class = RegionFilter
 
 class SubRegionModelViewSet(CitiesLightListModelViewSet):
     serializer_class = SubRegionSerializer
     queryset = SubRegion.objects.all()
-
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_class = SubRegionFilter
 
 class CityModelViewSet(CitiesLightListModelViewSet):
     """
@@ -125,6 +143,8 @@ class CityModelViewSet(CitiesLightListModelViewSet):
     """
     serializer_class = CitySerializer
     queryset = City.objects.all()
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filterset_class = CityFilter
 
     def get_queryset(self):
         """

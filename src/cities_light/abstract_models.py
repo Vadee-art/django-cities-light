@@ -1,17 +1,17 @@
 import re
+
 import autoslug
 import pytz
-
+from django.conf import settings
 from django.db import models
 from django.db.models import lookups
 from django.utils.encoding import force_str
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-
 from unidecode import unidecode
 
+from .settings import CITIES_LIGHT_APP_NAME, INDEX_SEARCH_NAMES
 from .validators import timezone_validator
-from .settings import INDEX_SEARCH_NAMES, CITIES_LIGHT_APP_NAME
+
 __all__ = ['AbstractCountry', 'AbstractRegion',
            'AbstractSubRegion', 'AbstractCity',
            'CONTINENT_CHOICES']
@@ -171,8 +171,10 @@ class AbstractCity(Base):
     display_name = models.CharField(max_length=200)
 
     search_names = ToSearchTextField(
-        max_length=2000, db_index=INDEX_SEARCH_NAMES, blank=True, default=""
-    )
+        max_length=4000,
+        db_index=INDEX_SEARCH_NAMES,
+        blank=True,
+        default='')
 
     latitude = models.DecimalField(
         max_digits=8,
