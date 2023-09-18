@@ -22,7 +22,7 @@ import django_filters
 from django.urls import include, path
 from django_filters import rest_framework as filters
 from rest_framework import relations, routers, viewsets
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import ModelSerializer, PrimaryKeyRelatedField
 
 from ..loading import get_cities_models
 
@@ -47,60 +47,46 @@ class SubRegionFilter(filters.FilterSet):
         fields = ["country", "region"]
 
 
-class CitySerializer(HyperlinkedModelSerializer):
+class CitySerializer(ModelSerializer):
     """
-    HyperlinkedModelSerializer for City.
+    ModelSerializer for City.
     """
-    url = relations.HyperlinkedIdentityField(
-        view_name='cities-light-api-city-detail')
-    country = relations.HyperlinkedRelatedField(
-        view_name='cities-light-api-country-detail', read_only=True)
-    region = relations.HyperlinkedRelatedField(
-        view_name='cities-light-api-region-detail', read_only=True)
-    subregion = relations.HyperlinkedRelatedField(
-        view_name='cities-light-api-subregion-detail', read_only=True)
+    country = PrimaryKeyRelatedField(many=False, read_only=True)
+    region = PrimaryKeyRelatedField(many=False, read_only=True)
+    subregion = PrimaryKeyRelatedField(many=False, read_only=True)
 
     class Meta:
         model = City
         exclude = ('slug',)
 
 
-class SubRegionSerializer(HyperlinkedModelSerializer):
+class SubRegionSerializer(ModelSerializer):
     """
-    HyperlinkedModelSerializer for SubRegion.
+    ModelSerializer for SubRegion.
     """
-    url = relations.HyperlinkedIdentityField(
-        view_name='cities-light-api-subregion-detail')
-    country = relations.HyperlinkedRelatedField(
-        view_name='cities-light-api-country-detail', read_only=True)
-    region = relations.HyperlinkedRelatedField(
-        view_name='cities-light-api-region-detail', read_only=True)
+    country = PrimaryKeyRelatedField(many=False, read_only=True)
+    region = PrimaryKeyRelatedField(many=False, read_only=True)
 
     class Meta:
         model = SubRegion
         exclude = ('slug',)
 
 
-class RegionSerializer(HyperlinkedModelSerializer):
+class RegionSerializer(ModelSerializer):
     """
-    HyperlinkedModelSerializer for Region.
+    ModelSerializer for Region.
     """
-    url = relations.HyperlinkedIdentityField(
-        view_name='cities-light-api-region-detail')
-    country = relations.HyperlinkedRelatedField(
-        view_name='cities-light-api-country-detail', read_only=True)
+    country = PrimaryKeyRelatedField(many=False, read_only=True)
 
     class Meta:
         model = Region
         exclude = ('slug',)
 
 
-class CountrySerializer(HyperlinkedModelSerializer):
+class CountrySerializer(ModelSerializer):
     """
-    HyperlinkedModelSerializer for Country.
+    ModelSerializer for Country.
     """
-    url = relations.HyperlinkedIdentityField(
-        view_name='cities-light-api-country-detail')
 
     class Meta:
         model = Country
